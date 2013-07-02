@@ -36,15 +36,6 @@ public class YamlPersistence implements PersistenceHandler {
         
         yaml = new Yaml(representer, new DumperOptions());
     }
-    
-    @Override
-    public void save(List<Game> games) {
-        String data;
-        for (Game game : games) {
-            data = yaml.dump(game);
-            writeFile(game.getName(), data);
-        }
-    }
 
     /**
      * Write file to disk
@@ -90,18 +81,25 @@ public class YamlPersistence implements PersistenceHandler {
             return null;
         }
     }
-    
+
     @Override
-    public List<Game> load() {
+    public void saveGames(List<Game> games) {
+        String data;
+        for (Game game : games) {
+            data = yaml.dump(game);
+            writeFile("games/" + game.getName(), data);
+        }
+    }
+
+    @Override
+    public List<Game> loadGames() {
         ArrayList<Game> games = new ArrayList<>();
-        // Get all non-config YAML files in the data folder
-        File[] yamlFiles = new File(base).listFiles(new FileFilter() {
+        // Get all YAML files in the data folder
+        File[] yamlFiles = new File(base + "games/").listFiles(new FileFilter() {
             @Override
             public boolean accept(File arg0) {
                 String name = arg0.getName().toLowerCase();
-                return FilenameUtils.getExtension(name).equals("yml")
-                        && !name.equals("config.yml")
-                        && !name.equals("messages.yml");
+                return FilenameUtils.getExtension(name).equals("yml");
             }
         });
         
@@ -109,9 +107,50 @@ public class YamlPersistence implements PersistenceHandler {
             String data;
             for (File f : yamlFiles) {
                 data = readFile(f.getName());
-                if (data != null) games.add((Game) yaml.load(data));
+                try {
+                    if (data != null) games.add((Game) yaml.load(data));
+                } catch (ClassCastException ex) {
+                    Message.warning("load_error", f.getName());
+                }
             }
             return games;
+        } else {
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public void saveArenas(List<Arena> arenas) {
+        String data;
+        for (Arena arena : arenas) {
+            data = yaml.dump(arenas);
+            writeFile("games/" + arena.getName(), data);
+        }
+    }
+
+    @Override
+    public List<Arena> loadArenas() {
+        ArrayList<Arena> arenas = new ArrayList<>();
+        // Get all YAML files in the data folder
+        File[] yamlFiles = new File(base + "arenas/").listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File arg0) {
+                String name = arg0.getName().toLowerCase();
+                return FilenameUtils.getExtension(name).equals("yml");
+            }
+        });
+        
+        if (yamlFiles != null) {
+            String data;
+            for (File f : yamlFiles) {
+                data = readFile(f.getName());
+                try {
+                    if (data != null) arenas.add((Arena) yaml.load(data));
+                } catch (ClassCastException ex) {
+                    Message.warning("load_error", f.getName());
+                }
+            }
+            return arenas;
         } else {
             return new ArrayList<>();
         }

@@ -16,10 +16,12 @@ public class GameMaker extends JavaPlugin {
     private List<Arena> activeArenas;
     private PersistenceHandler ph;
     
+    @Override
     public void onDisable() {
         // TODO: Place any custom disable code here.
     }
 
+    @Override
     public void onEnable() {
         Message.init(this);
         ph = new YamlPersistence(this.getDataFolder());
@@ -41,7 +43,8 @@ public class GameMaker extends JavaPlugin {
      */
     public void loadGames() {
         if (ph != null) {
-            activeGames = ph.load();
+            activeGames = ph.loadGames();
+            activeArenas = ph.loadArenas();
         } else {
             Message.severe("load_fail");
         }
@@ -52,7 +55,8 @@ public class GameMaker extends JavaPlugin {
      */
     public void saveGames() {
         if (ph != null) {
-            ph.save(activeGames);
+            ph.saveGames(activeGames);
+            ph.saveArenas(activeArenas);
         } else {
             Message.severe("save_fail");
         }
