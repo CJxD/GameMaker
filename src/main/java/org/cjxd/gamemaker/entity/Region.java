@@ -31,8 +31,8 @@ public class Region {
      */
     public boolean contains(double x, double y, double z) {
         boolean contains = true;
-        
-        // The cases where the point cant possibly be in the region
+
+        // The cases where the point can't possibly be in the region
         if (start.getX() < x && end.getX() < x) contains = false;
         if (start.getX() > x && end.getX() > x) contains = false;
         if (start.getY() < y && end.getY() < y) contains = false;

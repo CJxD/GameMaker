@@ -3,6 +3,8 @@ package org.cjxd.gamemaker.entity;
 import java.util.ArrayList;
 
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.NPC;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -66,33 +68,28 @@ public class GameInstance implements Listener {
     public void onKill(EntityDeathEvent e) {
         LivingEntity victim = e.getEntity();
         Player killer = victim.getKiller();
-        if (players.contains(killer)) {
-            switch(e.getEntityType()) {
-                case PLAYER:
-                    // TODO Make stronger
-                    handler.onPlayerKill(new PlayerKillEvent(e));
-                    break;
-                case VILLAGER:
-                    handler.onPlayerNPCKill(new PlayerNPCKillEvent(e));
-                    break;
-                case CREEPER:
-                    handler.onPlayerMobKill(new PlayerMobKillEvent(e));
-                    break;
-                default:
-                    break;
+        if (killer != null && players.contains(killer)) {
+            if (victim instanceof Player) {
+                handler.onPlayerKill(new PlayerKillEvent(e));
+            } else if (victim instanceof NPC) {
+                handler.onPlayerNPCKill(new PlayerNPCKillEvent(e));
+            } else if (victim instanceof Monster) {
+                handler.onPlayerMobKill(new PlayerMobKillEvent(e));
             }
         }
     }
     
     @EventHandler
     public void onPlayerMove(PlayerMoveEvent e) {
-        for (Region r : arena.regions()) {
-            if (r.contains(e.getTo()) && !r.contains(e.getFrom())) {
-                PlayerEnterEvent ev = new PlayerEnterEvent(e.getPlayer(), r);
-                handler.onPlayerEnter(ev);
-            } else if (r.contains(e.getFrom()) && !r.contains(e.getTo())) {
-                PlayerExitEvent ev = new PlayerExitEvent(e.getPlayer(), r);
-                handler.onPlayerExit(ev);
+        if (players.contains(e.getPlayer())) {
+            for (Region r : arena.regions()) {
+                if (r.contains(e.getTo()) && !r.contains(e.getFrom())) {
+                    PlayerEnterEvent ev = new PlayerEnterEvent(e.getPlayer(), r);
+                    handler.onPlayerEnter(ev);
+                } else if (r.contains(e.getFrom()) && !r.contains(e.getTo())) {
+                    PlayerExitEvent ev = new PlayerExitEvent(e.getPlayer(), r);
+                    handler.onPlayerExit(ev);
+                }
             }
         }
     }
@@ -103,8 +100,7 @@ public class GameInstance implements Listener {
             handler.onPlayerChat(e);
         } else {
             if (e.getMessage().equals("join")) {
-                this.players.add(e.getPlayer());
-                System.out.println("Player added");
+                join(e.getPlayer());
             }
         }
     }
