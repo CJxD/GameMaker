@@ -1,0 +1,8 @@
+name: GameMaker
+version: "${project.version}"
+description: 'Allows players to bind Lua scripts to blocks'
+authors: [CJxD]
+
+main: org.cjxd.gamemaker.GameMaker
+
+depend: [CommandIt]

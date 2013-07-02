@@ -1,0 +1,24 @@
+config-version: "0.0.1-DEV"
+prefix: "&4[GameMaker]&f "
+
+success:
+    
+information:
+
+    
+progress:
+    
+failure:
+  load_fail: "Unable to load games - no persistence handler is registered."
+  save_fail: "Unable to save games - no persistence handler is registered."
+  file_read_error: "Unable to load {NAME}. Some games may be missing as a result."
+  file_write_error: "Unable to write to {NAME}. Some changes may not have been saved."
+    
+restriction:
+
+update:
+
+metrics:
+  success: "Plugin metrics enabled! Thank you!"
+  opt_out: "You opted out of GameMaker metrics. =("
+  failure: "Could not initialize metrics."
